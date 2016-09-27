@@ -45,5 +45,17 @@ public class Algorithms {
         Vertex[] randEdge = graph.getRandomEdge();
         
         System.out.println("random edge vertex: " + randEdge[0] + " - " + randEdge[1]);
+        
+        graph.contractEdge(randEdge[0], randEdge[1]);
+        
+        System.out.println("");
+        
+        for(Vertex v : vertices){
+            try {
+                System.out.println(v.getLabel() + ": " + graph.getAdjacentVertex(v));
+            } catch(Exception exception){
+                exception.printStackTrace();
+            }
+        }
     }
 }

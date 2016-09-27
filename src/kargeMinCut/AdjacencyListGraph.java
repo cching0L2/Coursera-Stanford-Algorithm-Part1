@@ -1,5 +1,6 @@
 package kargeMinCut;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,11 +51,32 @@ public class AdjacencyListGraph{
     }
     
     public void contractEdge(Vertex v0, Vertex v1){
-        // TODO: implement
+        try {
+            for(Vertex v: getAdjacentVertex(v1)){
+                addEdge(v0, v);
+            }
+            graph.remove(v1);
+            removeSelfLoop(v0);
+        } catch (NoSuchVertexException e) {
+            e.printStackTrace();
+        }
     }
     
     private void removeSelfLoop(Vertex v){
-        // TODO: implement
+        List<Vertex> sameVertex = new ArrayList<Vertex>();
+        
+        try {
+            List<Vertex> neighbors = getAdjacentVertex(v);
+            
+            for(Vertex vertex : neighbors){
+                if(vertex == v)
+                    sameVertex.add(vertex);
+            }
+            
+            neighbors.removeAll(sameVertex);
+        } catch (NoSuchVertexException e) {
+            e.printStackTrace();
+        }
     }
     
     public Set<Vertex> getVertices(){
