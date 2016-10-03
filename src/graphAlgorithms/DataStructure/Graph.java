@@ -1,7 +1,9 @@
 package graphAlgorithms.DataStructure;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,18 +28,20 @@ public class Graph{
         graph.get(v2).add(v1);
     }
     
-    public Vertex getUnvisitedChildVertex(Vertex v){
+    public List<Vertex> getUnvisitedChildVertex(Vertex v){
+        List<Vertex> unvisited = new ArrayList<Vertex>(); 
+        
         try {
             for(Vertex vertex : getAllChildren(v)){
                 if(!vertex.isVisited()){
-                    return vertex; 
+                    unvisited.add(vertex);
                 }
             }
         } catch(NoSuchVertexException nsve){
-            return null; 
+            
         }
         
-        return null; 
+        return unvisited; 
     }
     
     public LinkedList<Vertex> getAllChildren(Vertex v) throws NoSuchVertexException{
