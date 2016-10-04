@@ -1,6 +1,9 @@
 package graphAlgorithms;
 
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Stack;
 
 import graphAlgorithms.DataStructure.Graph;
@@ -13,8 +16,13 @@ public class Algorithms{
     private Algorithms(){};
     
     public static void main (String[] args){
-        makeGraph(); 
-        dfs(g, (Vertex)g.getAllVertices().toArray()[0]);
+        try {
+            makeGraph(); 
+            printGraph(g);
+            //dfs(g, (Vertex)g.getAllVertices().toArray()[0]);
+        } catch(IOException ioe){
+            ioe.printStackTrace();
+        }
     }
     
     private static void dfs(Graph g, Vertex src){
@@ -26,7 +34,8 @@ public class Algorithms{
             
             if(!v.isVisited()){
                 v.markVisited();
-                System.out.print(v.getLabel() + " ");
+                System.out.println(v.getLabel() + " isVisited: " + v.isVisited());
+                //System.out.print(v.getLabel() + " -> ");
                 
                 for(Vertex vertex : g.getUnvisitedChildVertex(v)){
                     stack.push(vertex);
@@ -37,31 +46,36 @@ public class Algorithms{
         System.out.println();
     }
     
-    private static void makeGraph(){
+    private static void makeGraph() throws IOException{
+        BufferedReader br = new BufferedReader(new FileReader("input/pa4-small.txt"));
         g = new Graph(); 
         
-        Vertex a = new Vertex("a");
-        Vertex b = new Vertex("b");
-        Vertex c = new Vertex("c");
-        Vertex d = new Vertex("d");
-        Vertex e = new Vertex("e");
+        String line = br.readLine(); 
         
-        g.addVertex(a);
-        g.addVertex(b);
-        g.addVertex(c);
-        g.addVertex(d);
-        g.addVertex(e);
-        
-        try {
-            g.addEdge(a, b);
-            g.addEdge(a, c);
-            g.addEdge(b, c);
-            g.addEdge(a, d);
-            g.addEdge(b, e);
-            g.addEdge(c, e);
-            g.addEdge(d, e);
-        } catch(NoSuchVertexException ex){
+        while(line != null){
+            String[] labels = line.split(" ");
+            labels[0] = labels[0].trim();
+            labels[1] = labels[1].trim();
             
+            Vertex v1 = g.getVertex(labels[0]);
+            Vertex v2 = g.getVertex(labels[1]);
+            
+            if(v1 == null){
+                v1 = new Vertex(labels[0]);
+                g.addVertex(v1);
+            }
+            if(v2 == null){
+                v2 = new Vertex(labels[1]);
+                g.addVertex(v2);
+            }
+            
+            try{
+                g.addEdge(v1, v2);
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+            
+            line = br.readLine(); 
         }
     };
     

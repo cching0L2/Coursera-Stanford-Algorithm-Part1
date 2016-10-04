@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class Graph{
-    Map<Vertex, LinkedList<Vertex>> graph = new HashMap<Vertex, LinkedList<Vertex>>(); 
+    protected Map<Vertex, LinkedList<Vertex>> graph = new HashMap<Vertex, LinkedList<Vertex>>(); 
     
     public Graph(){
         
@@ -49,6 +49,18 @@ public class Graph{
             throw new NoSuchVertexException(v); 
         }
         return graph.get(v); 
+    }
+    
+    public Vertex getVertex(String label){
+        Vertex v = null; 
+        
+        for(Vertex vertex : getAllVertices()){
+            if(vertex.getLabel().equals(label)){
+                v = vertex; 
+            }
+        }
+        
+        return v; 
     }
     
     public Set<Vertex> getAllVertices(){
