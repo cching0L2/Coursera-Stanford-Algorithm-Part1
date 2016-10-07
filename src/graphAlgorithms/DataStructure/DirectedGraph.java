@@ -18,31 +18,24 @@ public class DirectedGraph{
     }
     
     public void reverseAllEdges(){
-        boolean[] isVisited = new boolean[numVertex + 1]; 
+        @SuppressWarnings("unchecked")
+        List<Integer>[] reversedGraph = (List<Integer>[])new List[numVertex + 1];
         
-        for(int label = 1; label <= numVertex; label++){
-            List<Integer> children = graph[label];
-            System.out.println("label: " + label + " children: " + children);
-            isVisited[label] = true; 
-            
-            for(int i = 0; i < children.size(); i++){
-                if(isVisited[children.get(i)]){
-                    //System.out.println(children.get(i) + " is visited");
-                    continue; 
-                }
-                System.out.println("children before - " + children.get(i) + ": "+ graph[children.get(i)]);
-                graph[children.get(i)].add(label);
-                System.out.println("label: " + label + " added to children: " + children);
-                System.out.println("children after - " + children.get(i) + ": " + graph[children.get(i)]);
-                
-                System.out.println("parent before removing out vertex- " + label + ": "+ graph[label]);
-                graph[label].remove(i);
-                i--; 
-                System.out.println("parent after removing out vertex- " + label + ": "+ graph[label]);
-            }
-            
-            System.out.println();
+        System.out.println("Reversing edges...");
+        
+        for(int i = 0; i < numVertex + 1; i++){
+            reversedGraph[i] = new ArrayList<Integer>(); 
         }
+        
+        for(int i = 1; i <= numVertex; i++){
+            List<Integer> children = graph[i];
+            for(Integer child : children){
+                reversedGraph[child].add(i);
+            }
+        }
+        
+        graph = reversedGraph; 
+        System.out.println("Reverse edges completed");
     }
     
     // v1 -> v2
