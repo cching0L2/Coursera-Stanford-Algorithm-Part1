@@ -1,19 +1,22 @@
 package kCluster;
 
-import java.util.Comparator;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.PriorityQueue;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
-//@SuppressWarnings("unused")
 public class KClusterSmall {
     private static KClusterSmall instance; 
-    private Set<Set<Integer>> allClusters; 
-    private PriorityQueue<DistObj> allDist;  
+    private List<Set<Integer>> allClusters; 
+    private List<DistObj> allDist;  
     
     private KClusterSmall(){
-        allClusters = new HashSet<Set<Integer>>();
-        allDist = new PriorityQueue<DistObj>(); 
+        allClusters = new ArrayList<Set<Integer>>();
+        allDist = new ArrayList<DistObj>(); 
     }
     
     public static KClusterSmall getInstance(){
@@ -26,10 +29,13 @@ public class KClusterSmall {
     public int getKCluster(int minK){
         while(allClusters.size() > minK){
             DistObj closest = getClosestNodePair(); 
+
             if(closest == null)
                 break; 
             
             mergeClusters(getClusterWithNode(closest.getEnd()), getClusterWithNode(closest.getOtherEnd())); 
+            
+            System.out.println("Number of clusters: " + allClusters.size());
         }
         
         return getClosestNodePair().getDistance(); 
@@ -37,9 +43,14 @@ public class KClusterSmall {
     
     // get the cluster that this node belongs to 
     private Set<Integer> getClusterWithNode(int node){
-        for(Set<Integer> cluster : allClusters){
-            if(cluster.contains(node))
+        Iterator<Set<Integer>> iterator = allClusters.iterator(); 
+        
+        while(iterator.hasNext()){
+            Set<Integer> cluster = iterator.next(); 
+            if(cluster.contains(node)){
                 return cluster;
+            }
+                
         }
         
         return null; 
@@ -47,10 +58,20 @@ public class KClusterSmall {
     
     // return the DistObj with smallest distance between two nodes, return null if no more clusters can be merged
     public DistObj getClosestNodePair(){
-        DistObj distObj = allDist.poll();
+        if(allDist.isEmpty())
+            return null; 
         
-        while(distObj != null && getClusterWithNode(distObj.getEnd()).equals(getClusterWithNode(distObj.getOtherEnd()))){
-            distObj = allDist.poll(); 
+        DistObj distObj = allDist.remove(0);
+        Set<Integer> firstCluster = getClusterWithNode(distObj.getEnd());
+        Set<Integer> secondCluster = getClusterWithNode(distObj.getOtherEnd());
+        
+        while(firstCluster.equals(secondCluster)){
+            if(allDist.isEmpty())
+                return null; 
+            
+            distObj = allDist.remove(0); 
+            firstCluster = getClusterWithNode(distObj.getEnd());
+            secondCluster = getClusterWithNode(distObj.getOtherEnd());
         }
         
         return distObj;
@@ -59,25 +80,43 @@ public class KClusterSmall {
     // merge all nodes from cluster 2 to cluster 1
     private void mergeClusters(Set<Integer> cluster1, Set<Integer> cluster2){
         cluster1.addAll(cluster2);
-        allClusters.remove(cluster2);
-        cluster2 = null; 
     }
     
-    private static void parseFile(String filename){
-        
+    public void parseFile(String filename){
+        try{
+            System.out.println("start parsing file...");
+            BufferedReader br = new BufferedReader(new FileReader(filename));
+            String line = br.readLine(); 
+            int numNodes = Integer.valueOf(line); 
+            
+            for(int i = 1; i <= numNodes; i++){
+                Set<Integer> cluster = new HashSet<Integer>(); 
+                cluster.add(i); 
+                allClusters.add(cluster);
+            }
+            
+            line = br.readLine(); 
+            while(line != null){
+                String[] input = line.split(" "); 
+                
+                DistObj distObj = new DistObj(Integer.valueOf(input[0]), Integer.valueOf(input[1]), Integer.valueOf(input[2])); 
+                allDist.add(distObj);
+                
+                line = br.readLine(); 
+            }
+            
+            br.close();
+            
+            Collections.sort(allDist);
+            
+            System.out.println("finished parsing file.");
+            
+        } catch(Exception e){
+            e.printStackTrace(); 
+        }
     }
     
-    public static void main(String[] args){
-        KClusterSmall clusterAlgo = KClusterSmall.getInstance(); 
-        
-        String filename = "input/part2pa2q1.txt";
-        int minK = 4; 
-        
-        parseFile(filename); 
-        System.out.println("The max spacing is: " + clusterAlgo.getKCluster(minK));
-    }
-    
-    private class DistObj implements Comparator<DistObj>{
+    private class DistObj implements Comparable<DistObj>{
         private int node1; 
         private int node2; 
         private int distance; 
@@ -101,10 +140,14 @@ public class KClusterSmall {
         }
 
         @Override
-        public int compare(DistObj o1, DistObj o2) {
-            return o1.getDistance() - o2.getDistance();
+        public int compareTo(DistObj o) {
+            return this.getDistance() - o.getDistance();
+        }
+        
+        @Override 
+        public String toString(){
+            return "\n" + node1 + " - " + node2 + " | distance: " + distance + " | "; 
         }
     }
-    
-    
+     
 }
