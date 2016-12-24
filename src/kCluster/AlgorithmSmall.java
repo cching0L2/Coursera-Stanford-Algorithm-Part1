@@ -1,6 +1,6 @@
 package kCluster;
 
-public class Algorithm{
+public class AlgorithmSmall{
     public static void main(String[] args){
         KClusterSmall clusterAlgo = KClusterSmall.getInstance(); 
         
